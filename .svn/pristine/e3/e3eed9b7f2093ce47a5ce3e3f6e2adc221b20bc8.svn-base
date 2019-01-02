@@ -1,0 +1,89 @@
+//
+//  RTMessageDetailVC.m
+//  ISS-ISPS-RT
+//
+//  Created by isoft on 2018/12/19.
+//  Copyright © 2018 isoft. All rights reserved.
+//
+
+#import "RTMessageDetailVC.h"
+#import "RTMessageDetailViewCell.h"
+#import "RTMessageDetailHeaderView.h"
+
+@interface RTMessageDetailVC ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *reTableView;
+
+@end
+
+@implementation RTMessageDetailVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navigationItem.title = @"消息详情";
+    self.view.backgroundColor = kBottomColor;
+    [self setInsetNoneWithScrollView:self.reTableView];
+}
+
+#pragma mark -- UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 3;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    RTMessageDetailViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RTMessageDetailViewCell"];
+    if (indexPath.row == 0 || indexPath.row == 1) {
+        cell.backImg.hidden = YES;
+        cell.contentLB.hidden = NO;
+    } else {
+       cell.contentLB.hidden = YES;
+        cell.backImg.hidden = NO;
+    }
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == 0 || indexPath.row == 1) {
+        return 90;
+    } else {
+        return 200;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    RTMessageDetailHeaderView *headerView = [[RTMessageDetailHeaderView alloc] init];
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 70;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0.01;
+}
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    UIView  *back = [[UIView alloc] init];
+    return back;
+}
+
+- (UITableView *)reTableView {
+    if (!_reTableView) {
+        _reTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+        _reTableView.backgroundColor = [UIColor whiteColor];
+        _reTableView.delegate = self;
+        _reTableView.dataSource = self;
+        _reTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        [self.view addSubview:_reTableView];
+        [_reTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(0);
+        }];
+        //注册cell
+        [_reTableView registerClass:[RTMessageDetailViewCell class] forCellReuseIdentifier:@"RTMessageDetailViewCell"];
+        
+    }
+    return _reTableView;
+}
+
+@end

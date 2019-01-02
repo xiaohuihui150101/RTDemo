@@ -1,0 +1,82 @@
+//
+//  RTDeviceMainVC.m
+//  ISS-ISPS-RT
+//
+//  Created by isoft on 2018/12/18.
+//  Copyright © 2018 isoft. All rights reserved.
+//
+
+#import "RTDeviceMainVC.h"
+#import "RTMessageListVC.h"
+
+@interface RTDeviceMainVC ()
+
+@property (nonatomic, strong) RTNoDataView *noDataView;
+
+@property (nonatomic, strong) UIView *redPoint;
+
+@end
+
+@implementation RTDeviceMainVC
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBar.barTintColor = kConfigColor;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    self.navigationItem.title = @"设备管理";
+    
+    self.view.backgroundColor = mHexColor(0xEAEAEA);
+    [self addNavigationBtn];
+    self.noDataView.hidden = NO;
+    
+}
+#pragma mark -- 配置导航栏
+- (void)addNavigationBtn {
+    UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftBtn.frame = CGRectMake(0, 0, 45, 44);
+    [leftBtn setImage:[UIImage imageNamed:@"search_n"] forState:UIControlStateNormal];
+    leftBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftBtn];
+    
+    UIButton *rightBtn = [[UIButton alloc] init];
+    rightBtn.frame = CGRectMake(0, 0, 45, 44);
+    [rightBtn setImage:[UIImage imageNamed:@"mess_white_n"] forState:UIControlStateNormal];
+    [rightBtn setImage:[UIImage imageNamed:@"mess_white_n"] forState:UIControlStateHighlighted];
+    rightBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    self.redPoint = [[UIView alloc] initWithFrame:CGRectMake(39, 10, 6, 6)];
+    [rightBtn addSubview:self.redPoint];
+    self.redPoint.backgroundColor = [UIColor redColor];
+    self.redPoint.clipsToBounds = YES;
+    self.redPoint.layer.cornerRadius = 3;
+    self.redPoint.hidden = YES;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
+    
+}
+
+
+- (RTNoDataView *)noDataView {
+    if (!_noDataView) {
+        _noDataView = [[RTNoDataView alloc] initWithFrame:self.view.bounds];
+        _noDataView.viewType = RTNoDataViewTypeNone;
+        [self.view addSubview:_noDataView];
+    }
+    return _noDataView;
+}
+
+#pragma mark -- 导航栏响应事件
+- (void)leftBtnClick:(UIButton *)sender {
+    NSLog(@"点击搜索");
+}
+
+- (void)rightBtnClick:(UIButton *)sender {
+    RTMessageListVC *vc = [[RTMessageListVC alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+
+@end

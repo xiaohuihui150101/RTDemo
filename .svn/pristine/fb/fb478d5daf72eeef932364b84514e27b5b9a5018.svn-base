@@ -1,0 +1,6 @@
+framework module RongShenLive {
+  umbrella header "RongShenLive.h"
+
+  export *
+  module * { export * }
+}

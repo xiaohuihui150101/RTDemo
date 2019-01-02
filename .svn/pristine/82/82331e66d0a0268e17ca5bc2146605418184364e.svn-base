@@ -1,0 +1,119 @@
+//
+//  RTDeviceMainVC.m
+//  ISS-ISPS-RT
+//
+//  Created by isoft on 2018/12/18.
+//  Copyright © 2018 isoft. All rights reserved.
+//
+
+#import "RTDeviceMainVC.h"
+#import "RTMessageListVC.h"
+#import "RTDeviceMainCell.h"
+
+@interface RTDeviceMainVC ()<UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+
+@property (nonatomic, strong) RTNoDataView *noDataView;
+
+@property (nonatomic, strong) UIView *redPoint;
+
+@property (nonatomic, strong) UICollectionView *collectionView;
+
+@end
+
+@implementation RTDeviceMainVC
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBar.barTintColor = kConfigColor;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    self.navigationItem.title = @"设备管理";
+    
+    self.view.backgroundColor = mHexColor(0xEAEAEA);
+    [self setInsetNoneWithScrollView:self.collectionView];
+    [self addNavigationBtn];
+    self.noDataView.hidden = YES;
+    
+}
+#pragma mark -- 配置导航栏
+- (void)addNavigationBtn {
+    UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftBtn.frame = CGRectMake(0, 0, 45, 44);
+    [leftBtn setImage:[UIImage imageNamed:@"search_n"] forState:UIControlStateNormal];
+    leftBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftBtn];
+    
+    UIButton *rightBtn = [[UIButton alloc] init];
+    rightBtn.frame = CGRectMake(0, 0, 45, 44);
+    [rightBtn setImage:[UIImage imageNamed:@"mess_white_n"] forState:UIControlStateNormal];
+    [rightBtn setImage:[UIImage imageNamed:@"mess_white_n"] forState:UIControlStateHighlighted];
+    rightBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    self.redPoint = [[UIView alloc] initWithFrame:CGRectMake(39, 10, 6, 6)];
+    [rightBtn addSubview:self.redPoint];
+    self.redPoint.backgroundColor = [UIColor redColor];
+    self.redPoint.clipsToBounds = YES;
+    self.redPoint.layer.cornerRadius = 3;
+    self.redPoint.hidden = YES;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
+    
+}
+#pragma mark -- UICollectionViewDataSource
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return 20;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    RTDeviceMainCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"RTDeviceMainCell" forIndexPath:indexPath];
+    cell.backgroundColor = kBottomColor;
+    return cell;
+}
+#pragma mark -- UICollectionViewDelegateFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(ScreenWidth-30, 130);
+}
+
+- (UICollectionView *)collectionView {
+    if (!_collectionView) {
+        UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+        flowLayout.minimumInteritemSpacing = 8;
+        flowLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
+        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+        _collectionView.backgroundColor = mHexColor(0xEAEAEA);
+        _collectionView.delegate = self;
+        _collectionView.dataSource = self;
+        [self.view addSubview:_collectionView];
+        [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(0);
+        }];
+        //注册cell
+        [_collectionView registerClass:[RTDeviceMainCell class] forCellWithReuseIdentifier:@"RTDeviceMainCell"];
+        
+    }
+    return _collectionView;
+}
+
+- (RTNoDataView *)noDataView {
+    if (!_noDataView) {
+        _noDataView = [[RTNoDataView alloc] initWithFrame:self.view.bounds];
+        _noDataView.viewType = RTNoDataViewTypeNone;
+        [self.view addSubview:_noDataView];
+    }
+    return _noDataView;
+}
+
+#pragma mark -- 导航栏响应事件
+- (void)leftBtnClick:(UIButton *)sender {
+    NSLog(@"点击搜索");
+}
+
+- (void)rightBtnClick:(UIButton *)sender {
+    RTMessageListVC *vc = [[RTMessageListVC alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+
+@end

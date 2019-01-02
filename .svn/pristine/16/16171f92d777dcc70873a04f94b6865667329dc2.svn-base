@@ -1,0 +1,100 @@
+//
+//  RTMoreVideoPlayVC.m
+//  ISS-ISPS-RT
+//
+//  Created by isoft on 2018/12/21.
+//  Copyright © 2018 isoft. All rights reserved.
+//
+
+#import "RTMoreVideoPlayVC.h"
+#import "RTMoreVideoPlayCell.h"
+#import "RTVideoPlayFootView.h"
+#import "RTLandScapePlayVC.h"
+
+
+@interface RTMoreVideoPlayVC ()<UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+
+@property (nonatomic, strong) UICollectionView *collectionView;
+
+@end
+
+@implementation RTMoreVideoPlayVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    self.navigationItem.title = @"视频播放";
+    self.view.backgroundColor = kBottomColor;
+    [self setInsetNoneWithScrollView:self.collectionView];
+        
+}
+#pragma mark - UIViewControllerRotation
+//是否可以旋转
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+//支持的方向
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+#pragma mark -- UICollectionViewDataSource
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return 4;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    RTMoreVideoPlayCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"RTMoreVideoPlayCell" forIndexPath:indexPath];
+    mWeakSelf
+    [cell.fullBtn tapHandle:^NSString * _Nonnull{
+        RTLandScapePlayVC *vc = [[RTLandScapePlayVC alloc] init];
+        [weakSelf.navigationController pushViewController:vc animated:YES];
+        return @"点击全屏按钮";
+    }];
+    return cell;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    UICollectionReusableView *reusableview = nil;
+    if (kind == UICollectionElementKindSectionFooter) {
+        RTVideoPlayFootView *footView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"RTVideoPlayFootView" forIndexPath:indexPath];
+        reusableview = footView;
+    }
+    
+    return reusableview;
+}
+#pragma mark -- UICollectionViewDelegateFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake((ScreenWidth-30-10)/2, 130);
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    
+    return CGSizeMake(ScreenWidth, 50);
+}
+
+- (UICollectionView *)collectionView {
+    if (!_collectionView) {
+        
+        UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+        flowLayout.minimumInteritemSpacing = 8;
+        flowLayout.sectionInset = UIEdgeInsetsMake(10, 15, 10, 15);
+        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+        _collectionView.backgroundColor = kBottomColor;
+        _collectionView.delegate = self;
+        _collectionView.dataSource = self;
+        [self.view addSubview:_collectionView];
+        [_collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(0);
+        }];
+        //注册cell和页眉
+        [_collectionView registerClass:[RTMoreVideoPlayCell class] forCellWithReuseIdentifier:@"RTMoreVideoPlayCell"];
+        [_collectionView registerClass:[RTVideoPlayFootView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"RTVideoPlayFootView"];
+        
+    }
+    return _collectionView;
+}
+
+
+@end

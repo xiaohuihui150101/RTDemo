@@ -1,0 +1,92 @@
+//
+//  RTPersonDataVC.m
+//  ISS-ISPS-RT
+//
+//  Created by isoft on 2018/12/19.
+//  Copyright © 2018 isoft. All rights reserved.
+//
+
+#import "RTPersonDataVC.h"
+#import "RTPersonalViewCell.h"
+
+@interface RTPersonDataVC ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *reTableView;
+@property (nonatomic, strong) NSArray *titleArray;
+
+@end
+
+@implementation RTPersonDataVC
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController.navigationBar setHidden:NO];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    self.view.backgroundColor = kBottomColor;
+    self.navigationItem.title = @"个人资料";
+    [self setInsetNoneWithScrollView:self.reTableView];
+    
+    self.titleArray = @[@"头像", @"姓名", @"性别", @"工号", @"区域", @"所在地"];
+    
+}
+#pragma mark -- UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.titleArray.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    RTPersonalViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RTPersonalViewCell"];
+    if (indexPath.row == 0) {
+        cell.headImg.hidden = NO;
+        cell.subNameLB.hidden = YES;
+    } else {
+        cell.headImg.hidden = YES;
+        cell.subNameLB.hidden = NO;
+        if (indexPath.row == 1 || indexPath.row == 2 ) {
+            cell.arrowImg.hidden = NO;
+        } else {
+            cell.arrowImg.hidden = YES;
+        }
+    }
+    cell.nameLB.text = self.titleArray[indexPath.row];
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 50;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UIView *vi = [[UIView alloc] init];
+    vi.backgroundColor = [UIColor whiteColor];
+    return vi;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 10;
+}
+
+- (UITableView *)reTableView {
+    if (!_reTableView) {
+        _reTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+        _reTableView.backgroundColor = kBottomColor;
+        _reTableView.delegate = self;
+        _reTableView.dataSource = self;
+        _reTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        [self.view addSubview:_reTableView];
+        [_reTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(0);
+        }];
+        //注册cell
+        [_reTableView registerClass:[RTPersonalViewCell class] forCellReuseIdentifier:@"RTPersonalViewCell"];
+        
+    }
+    return _reTableView;
+}
+
+@end
